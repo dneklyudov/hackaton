@@ -1,0 +1,336 @@
+.layout
+	display: flex
+	min-height: 100vh
+
+	&__sidebar 
+		position: relative
+		width: 61px
+		background: #fff
+	
+	&__content
+		flex: 1
+
+	&__content-box
+		flex: 1
+		padding-bottom: 60px
+
+
+.sidebar
+	position: absolute
+	height: 100%
+	width: 61px
+	overflow: hidden
+	left: 0
+	top: 0
+	z-index: 20
+	background: #fff
+	transition: all 0.2s ease
+	box-shadow: rgb(179, 179, 179) 2px 0 2px 0px
+
+	&:hover 
+		width: 300px
+
+	&__menu-item
+		padding: 20px
+		display: flex
+		align-items: center
+		color: #0055a6
+		font-size: 16px
+		white-space: nowrap
+		border-bottom: 1px solid #e6e6e6
+		cursor: pointer
+		transition: all 0.15s ease
+
+		&.is-active
+			color: #0055a6
+		
+		.fa
+			display: block
+			margin-right: 30px
+			font-size: 20px
+			transition: all 0.15s ease
+
+	&__menu-item-label
+		color: #212529
+
+	&__menu-item:hover &__menu-item-label
+		color: #0055a6
+
+.page-header
+	background: #f7f7f7
+	padding-top: 60px
+	margin-bottom: 60px
+	border-bottom: 1px solid #e6e6e6
+
+	.container
+		position: relative
+
+	&__title-wrap
+		display: flex
+		flex-wrap: wrap
+		justify-content: space-between
+		margin-bottom: 60px
+		@media (max-width: 1250px)
+			display: block
+
+	&__title
+		color: #000
+		line-height: 2em
+		font-weight: 700
+		@media (max-width: 1250px)
+			margin-bottom: 20px
+
+	&__title-desc
+		font-weight: 400
+		margin-top: 10px
+		color: #969696
+
+	&__stats
+		position: absolute
+		top: -60px
+		right: 0
+		padding: 20px 30px
+		font-size: 14px
+		color: #fff
+		border-radius: 0 0 10px 10px
+		background: linear-gradient(0deg, #0055ae 0%, #0070dd 100%)
+
+	&__stats-wrap
+		display: flex
+
+	&__stats-title
+		width: 100%
+		font-weight: 500
+		margin-bottom: 5px
+
+	&__stats-item
+		margin-right: 40px
+
+		&:last-child
+			margin-right: 0
+
+
+.menu
+	display: flex
+
+	&__item
+		font-size: 18px
+		margin-right: 60px
+		padding-bottom: 20px
+		border-bottom: 2px solid #f7f7f7
+		transition: all 0.2s ease
+		cursor: pointer
+		user-select: none
+		color: #000
+
+		&:hover
+			color: #000
+
+		&.is-active
+			color: #0055a6
+			border-bottom-color: #0055a6
+
+
+.check-table
+
+	&__item
+		padding: 20px 0
+		border-bottom: 1px solid rgba(0,0,0,0.05)
+		display: flex
+		align-items: center
+
+		&:first-child
+			padding-top: 0
+	
+	&__item-num
+		flex-shrink: 0
+		color: #bdbdbd
+		width: 50px
+		font-size: 12px
+
+	&__item-name
+		width: 40%
+		padding-right: 40px
+
+	&__item-date
+		width: 20%
+		padding-right: 40px
+		white-space: nowrap
+
+	&__item-status
+		width: 20%
+		padding-right: 40px
+
+	&__item-controls
+		flex-grow: 1
+		display: flex
+
+		.ico-btn
+			margin-left: 30px
+
+
+.controls-panel
+	margin-bottom: 40px
+
+
+.ctrl-button
+	display: inline-flex
+	align-items: center
+	justify-content: center
+	margin-left: 5px
+	padding: 0 20px
+	height: 40px
+	min-width: 140px
+	color: #fff
+	font-size: 16px
+	border-radius: 4px
+	cursor: pointer
+	user-select: none
+	white-space: nowrap
+	background: linear-gradient(0deg, rgba(0,85,174,1) 0%, rgba(0,112,221,1) 100%)
+	position: relative
+	letter-spacing: .2px
+
+	&.is-disabled
+		pointer-events: none
+		opacity: 0.2
+		filter: grayscale(100%)
+
+	&.is-red
+		background: linear-gradient(0deg, rgba(148,0,4,1) 0%, rgba(188,0,11,1) 100%)
+	
+	&.is-grey
+		background: linear-gradient(0deg, #a9a9a9 0%, #dcdcdc 100%)
+
+	&:hover
+		background-color: #0062c0
+	
+	&:hover::before
+		background-color: rgba(0,0,0,0)
+
+	span
+		position: relative
+
+	&:before
+		content: ''
+		display: block
+		position: absolute
+		left: 0
+		top: 0
+		width: 100%
+		height: 100%
+		background-color: rgba(0,0,0,.11)
+		transition: background-color .1s ease-in-out
+		border-radius: inherit
+
+.ico-btn
+	display: flex
+	height: 40px
+	width: 40px
+	justify-content: center
+	align-items: center
+	cursor: pointer
+	user-select: none
+	color: #d21616
+	font-size: 18px
+	transition: all 0.25s ease
+
+	&:hover
+		color: #ff2d2d
+
+.status
+	display: inline-flex
+	align-items: center
+	padding: 8px 20px
+	border-radius: 100px
+	user-select: none
+	background: #f9f9fb
+
+	&.in-work
+		background: #5cd065
+		color: #fff
+
+	svg
+		margin-left: 10px
+
+	svg path,svg rect
+		fill: #fff
+
+
+.file-loader-wrap
+	display: flex
+	> .ctrl-button
+		height: 62px
+		width: 200px
+		font-size: 18px
+
+.file-loader
+	width: 100%
+	max-width: 800px
+	display: flex
+	align-items: center
+	padding: 10px 10px 10px 30px
+	border-radius: 4px
+	border: 1px solid #e6e6e6
+	margin-right: 10px
+
+	&__placeholder
+		color: #b9b9b9
+
+	&__file
+		flex-grow: 1
+
+	&__filesize
+		margin-left: 25px
+		color: #b9b9b9
+
+	.ctrl-button
+		width: 120px
+		height: 40px
+
+	input
+		display: none
+
+
+.description
+	margin-top: 40px
+
+	h5
+		font-size: 18px
+		font-weight: 500
+		margin-bottom: 10px
+		color: #000
+
+
+.page-loader
+	position: fixed
+	display: flex
+	align-items: center
+	justify-content: center
+	width: 100%
+	height: 100%
+	top: 0
+	left: 0
+	z-index: 10000
+	background: rgba(0,0,0,0.5)
+
+	&.fade-enter-active, &.fade-leave-active
+		transition: opacity .25s
+
+	&.fade-enter, &.fade-leave-to
+		opacity: 0
+
+	svg
+		width: 100px
+		height: 100px
+		margin: 20px
+		display:inline-block
+
+ul
+	list-style-type: disc
+	margin: 20px 0 20px 30px
+
+@media screen and (max-width: 1024px)
+	.container
+		max-width: 800px
+

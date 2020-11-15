@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Личный кабинет</title>
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+	<link rel="icon" href="/favicon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="/style/style.css">
+</head>
+<body>
+	<div id="app">
+		
+		<div class="layout">
+
+			<div class="layout__sidebar">
+				<div class="sidebar">
+					<div class="sidebar__menu">
+						<div class="sidebar__menu-item">
+							<i class="fa fa-user-circle-o" aria-hidden="true"></i>
+							<div class="sidebar__menu-item-label">Иван Иванович</div>
+						</div>
+						<div class="sidebar__menu-item is-active">
+							<i class="fa fa-check-circle-o" aria-hidden="true"></i>
+							<div class="sidebar__menu-item-label">Мои проверки</div>
+						</div>
+						<div class="sidebar__menu-item">
+							<i class="fa fa-cog" aria-hidden="true"></i>
+							<div class="sidebar__menu-item-label">Настройки</div>
+						</div>
+						<div class="sidebar__menu-item">
+							<i class="fa fa-sign-out" aria-hidden="true"></i>
+							<div class="sidebar__menu-item-label">Выйти</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="layout__content">
+				
+				<div class="page-header">
+					<div class="container">
+						<div class="page-header__title-wrap">
+							<div class="page-header__title">
+								<div class="is-size-2">Сервис пакетной проверки адресов</div>
+								<div class="page-header__title-desc">Проверьте ваши адреса перед отправкой и удивитесь скорости доставки</div>
+							</div>
+						</div>
+						<div class="menu">
+							<div @click="selectTab(1)" class="menu__item" :class="{'is-active' : currentTab == 1}">Завершенные проверки</div>
+							<div @click="selectTab(2)" class="menu__item" :class="{'is-active' : currentTab == 2}">Проверки в очереди</div>
+							<div @click="selectTab(3)" class="menu__item" :class="{'is-active' : currentTab == 3}">Новая проверка</div>
+						</div>
+						<div class="page-header__stats">
+							<div class="page-header__stats-title">В этом месяце вы обработали:</div>
+							<div class="page-header__stats-text">— файлов: {{ statFileProcessed }} <br>— адресов: {{ statAddrProcessed }}</div>
+						</div>
+					</div>
+				</div>
+
+				<div v-if="currentTab == 1" class="layout__content-box">
+					<div class="container">
+						<div class="check-table" v-if="completedFiles.length > 0">
+							<div class="check-table__item" v-for="(file, index) in completedFiles" :key="'completed_file' + index">
+								<div class="check-table__item-num">{{ index + 1 }}</div>
+								<div class="check-table__item-name"><a :href="file.link">{{ file.name }}</a></div>
+								<div class="check-table__item-date">{{ file.date }}</div>
+								<div class="check-table__item-controls">
+									<div class="ctrl-button" @click="fileOpen(file)"><span>Отчет</span></div>
+									<div class="ctrl-button" @click="showFileStats(file)"><span>Статистика</span></div>
+									<div class="ctrl-button" @click="downloadXLS(file.path)"><span>Скачать XLS</span></div>
+									<div class="ctrl-button" @click="downloadCSV(file.path)"><span >Скачать CSV</span></div>
+									<!-- <div class="ctrl-button is-red" @click="deleteCompletedFile(file)"><span>Удалить</span></div> -->
+									<div class="ico-btn" title="Удалить файл" @click="deleteCompletedFile(file)">
+										<i class="fa fa-trash" aria-hidden="true"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div v-else>Проверенных файлов еще нет.</div>
+					</div>
+				</div>
+
+				<div v-if="currentTab == 2" class="layout__content-box">
+					<div class="container">
+						<div class="check-table" v-if="processedFiles.length > 0">
+							<div class="check-table__item" v-for="(file, index) in processedFiles" :key="'active_file' + index">
+								<div class="check-table__item-num">{{ index + 1 }}</div>
+								<div class="check-table__item-name"><a :href="file.link">{{ file.name }}</a></div>
+								<div class="check-table__item-date">{{ file.date }}</div>
+								<div class="check-table__item-status">
+									<div class="status stopped" v-if="file.pause == '1'">
+										Приостановлено
+									</div>
+									<div class="status in-work" v-if="file.pause == '0'">
+										Обрабатывается
+										<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="20px" height="20px" viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve"><path fill="#000" d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"/></path></svg>
+									</div>
+								</div>
+								<div class="check-table__item-controls">
+									<div class="ctrl-button" :class="{'is-grey' : file.pause}" @click="fileCheckStop(file)"><span v-if="file.pause == '1'">Возобновить</span><span v-if="file.pause == '0'">Остановить</span></div>
+									<div class="ico-btn" title="Удалить файл" @click="deleteProcessedFile(file)">
+										<i class="fa fa-trash" aria-hidden="true"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div v-else>Загруженных и непроверенных файлов нет.</div>
+					</div>
+				</div>
+
+				<div v-if="currentTab == 3" class="layout__content-box">
+					<div class="container">
+						<div class="file-loader-wrap">
+							<div class="file-loader" @drop.prevent="fileDrop" @dragover.prevent="">
+								<div class="file-loader__file">
+									<div class="file-loader__placeholder" v-if="!uploadFile.length">Выберите или перетащите файл для загрузки</div>
+									<div class="file-loader__filename" v-else>{{ uploadFile[0].name }}<span class="file-loader__filesize">{{ bytesToSize(uploadFile[0].size) }}</span></div>
+								</div>
+								<label class="file-loader__button ctrl-button" for="file"><span>Выбрать</span></label>
+								<input type="file" name="file" id="file" @change="fileSelect">
+							</div>
+							<div class="ctrl-button" :class="{'is-disabled' : !uploadFile.length}" @click="fileLoad">Загрузить</div>
+						</div>
+						<div class="description">
+							<h5>Сервис пакетной проверки почтовых адресов</h5>
+							<p>Сервис позволяет проверить и нормализовать адресные базы данных, представленных в виде файлов формата csv или xlsx (в настоящее время реализована только загрузка данных в формате csv).</p><br>
+							<p>Для проверки загрузите файл в формате csv. Все содержащиеся в нем почтовые адреса будут добавлены в очередь для проверки, а сам файл будет отображаться в разделе «Проверки в очереди. После того, как будут
+							проверены все адреса из этого файла, файл переместится в раздел «Завершенные проверки», и пользователю будут доступны отчеты в трех вариантах: на экране монитора, в виде файла xlsx, в виде файла csv. 
+							В каждом из этих отчетов пользователь сможет увидеть исходный адрес, нормализованный адрес и статус. Также станет доступен просмотр краткой статистики.</p><br>
+							<h5>Технические требования к загружаемым файлам</h5>
+							<ul>
+								<li>Формат: строго csv</li>
+								<li>Кодировка: строго Win-1251</li>
+								<li>Количество столбцов: строго 1</li>
+								<li>Заголовки: отсутствуют</li>
+								<li>В файле допустимы пустые строки</li>
+							</ul>
+							<p>Скачайте <a download="" href="/example.csv">пример файла для загрузки</a> и сделайте свой по образцу.</p>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+
+		<Modal v-model="modalViewFile" title="Отчет">
+			<table>
+				<tr v-for="(str, index) in viewFile" :key="'td_' + index" v-bind:class="{ 'ok': str.comment == 'Адрес подтвержден', 'err': str.comment != 'Адрес подтвержден' }">
+					<td>{{ index + 1 }}</td>
+					<td>{{ str.addressOld }}</td>
+					<td>{{ str.addressCorrect }}</td>
+					<td>{{ str.comment }}</td>
+				</tr>
+			</table>
+		</Modal>
+
+		<Modal v-model="modalViewStats" title="Просмотр статистики">
+			<div v-html="fileStatsText"></div>
+		</Modal>
+
+		<transition name="fade">
+			<div class="dialog" v-if="dialog.show">
+				<div class="dialog__window">
+					<div class="dialog__window-title">{{ dialog.title }}</div>
+					<div class="dialog__window-text">{{ dialog.text }}</div>
+					<div class="dialog__window-controls">
+						<div class="dialog__window-button" @click="dialog.yesAction">Да</div>
+						<div class="dialog__window-button" @click="dialog.noAction">Нет</div>
+					</div>
+				</div>
+				<div class="dialog__overlay"></div>
+			</div>
+		</transition>
+
+		<transition name="fade">
+			<div class="page-loader" v-if="pageLoader">
+				<svg version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
+					<circle fill="#fff" stroke="none" cx="6" cy="50" r="6">
+						<animate attributeName="opacity" dur="1s" values="0;1;0" repeatCount="indefinite" begin="0.1"/>
+					</circle>
+					<circle fill="#fff" stroke="none" cx="26" cy="50" r="6">
+						<animate attributeName="opacity" dur="1s" values="0;1;0" repeatCount="indefinite" begin="0.2"/>
+					</circle>
+					<circle fill="#fff" stroke="none" cx="46" cy="50" r="6">
+						<animate attributeName="opacity" dur="1s" values="0;1;0" repeatCount="indefinite" begin="0.3"/>
+					</circle>
+				</svg>
+			</div>
+		</transition>
+
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+	<script src="/js/vue-modal.umd.min.js"></script>
+	<script src="/js/noty.min.js"></script>
+	<script src="/js/scripts.js"></script>
+</body>
+</html>
